@@ -1,21 +1,22 @@
 package main
 
 import (
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 )
 
 func process(out interface{}) {
 	switch i := out.(type) {
+	case nil, bool, int, float32, float64:
+		return
 	case string:
 		// TODO: Modify value as needed
 		log.Printf("i is a string: %+v\n", i)
-	case nil, bool, int, float32, float64:
-		log.Printf("i is non-string scalar: %+v\n", i)
-		return
 	// Recurse into maps and arrays as needed
-	case map[string]interface{}:
+	case yaml.MapItem:
+		process(i.Value)
+	case yaml.MapSlice:
 		for _, v := range i {
 			process(v)
 		}
@@ -36,7 +37,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	yaml_in := make(map[string]interface{})
+	yaml_in := yaml.MapSlice{}
 	if err := yaml.Unmarshal([]byte(content), &yaml_in); err != nil {
 		log.Fatal(err)
 	}
