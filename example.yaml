@@ -1,0 +1,37 @@
+map:
+  keya1: val1
+  keya2: val2
+
+array_of_maps:
+  - keya1: vala1
+    keya2: vala2
+  - keyb1: valb1
+    keyb2: valb2
+
+strings:
+  - string1
+  - string2
+  - null
+
+ints:
+  - 1
+  - 2
+  - null
+
+floats:
+  - 1.2
+  - 2.1
+
+bools:
+  - True
+  - False
+
+# Simple test of recursion
+nested:
+  key: value
+  key2: 
+    nestedkey: value
+    nestedkey2:
+      - arrayValue1
+      - arrayValue2
+      - arrayMapKey: arrayMapValue
