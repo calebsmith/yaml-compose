@@ -181,9 +181,10 @@ func pre_process_file(filename string) (ProcessResult, error) {
 	return pre_process_file_w_prefix(filename, "")
 }
 
+// Render YAML template with the given variable data
 func process(res ProcessResult) (string, error) {
 	if res.vars != nil {
-		tmp, err := template.New("test").Parse(res.out)
+		tmp, err := template.New("main").Parse(res.out)
 		var buff bytes.Buffer
 		tmp.Execute(&buff, res.vars)
 		return buff.String(), err

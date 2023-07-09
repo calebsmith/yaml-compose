@@ -1,19 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	// TODO: Take filename as CLI argument
-	pre_res, err := pre_process_file("examples/main.yaml")
+	args := os.Args[1:]
+	if len(args) != 1 {
+		log.Fatal("Command takes a single filename as only argument")
+	}
+	filename := args[0]
+	// Pre-process injection and loading directives
+	pre_res, err := pre_process_file(filename)
 	if err != nil {
 		log.Printf("Failed to pre-process YAML:\n%s\n", pre_res.out)
 		log.Printf("Loaded variables were:\n%+v\n", pre_res.vars)
 		log.Fatal(err)
 	}
+	// Render template variables
 	res, err := process(pre_res)
 	if err != nil {
 		log.Printf("Failed to process YAML template:\n%s\n", res)
@@ -26,6 +34,6 @@ func main() {
 		log.Printf("Incorrect YAML generated: %s\n", res)
 		log.Fatal(err)
 	}
-	// Output results for use
-	log.Print(res)
+	// Output valid YAML results
+	fmt.Println(res)
 }
