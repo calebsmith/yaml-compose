@@ -25,19 +25,24 @@ func pre_process_line_load(res ProcessResult) (ProcessResult, error) {
 		groupIndex := re.SubexpIndex("filename")
 		if groupIndex != -1 {
 			filename := strings.TrimSpace(match[groupIndex])
-			content, err := os.ReadFile(filename)
+			var_res, err := pre_process_file_w_prefix(filename, "")
 			if err != nil {
 				return ProcessResult{
 					out:  "",
 					vars: nil}, err
 			}
 			vars := make(map[string]interface{})
+			if var_res.vars != nil {
+				for k, v := range *var_res.vars {
+					vars[k] = v
+				}
+			}
 			if res.vars != nil {
 				for k, v := range *res.vars {
 					vars[k] = v
 				}
 			}
-			if err := yaml.Unmarshal([]byte(content), &vars); err != nil {
+			if err := yaml.Unmarshal([]byte(var_res.out), &vars); err != nil {
 				return ProcessResult{
 					out:  "",
 					vars: nil}, err
