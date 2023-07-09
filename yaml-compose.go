@@ -8,20 +8,24 @@ import (
 
 func main() {
 	// TODO: Take filename as CLI argument
-	proc_res, err := pre_process_file("examples/main.yaml")
+	pre_res, err := pre_process_file("examples/main.yaml")
 	if err != nil {
+		log.Printf("Failed to pre-process YAML:\n%s\n", pre_res.out)
+		log.Printf("Loaded variables were:\n%+v\n", pre_res.vars)
 		log.Fatal(err)
 	}
-	// TODO: Remove debug logging of vars
-	log.Printf("Vars:\n")
-	for k, v := range *proc_res.vars {
-		log.Printf("%s=%+v\n", k, v)
-	}
-	// TODO: Move after YAML verification
-	log.Printf(proc_res.out)
-	// Parse as yaml
-	yaml_in := yaml.MapSlice{}
-	if err := yaml.Unmarshal([]byte(proc_res.out), &yaml_in); err != nil {
+	res, err := process(pre_res)
+	if err != nil {
+		log.Printf("Failed to process YAML template:\n%s\n", res)
+		log.Printf("Loaded variables were:\n%+v\n", pre_res.vars)
 		log.Fatal(err)
 	}
+	// Verify resulting content as YAML
+	yaml_in := make(map[string]interface{})
+	if err := yaml.Unmarshal([]byte(res), &yaml_in); err != nil {
+		log.Printf("Incorrect YAML generated: %s\n", res)
+		log.Fatal(err)
+	}
+	// Output results for use
+	log.Print(res)
 }

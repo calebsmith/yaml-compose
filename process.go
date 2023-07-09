@@ -2,10 +2,12 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"os"
 	"regexp"
 	"strings"
+	"text/template"
 
 	"gopkg.in/yaml.v2"
 )
@@ -177,4 +179,15 @@ func pre_process_file_w_prefix(filename string, prefix string) (ProcessResult, e
 func pre_process_file(filename string) (ProcessResult, error) {
 	// Pre-process given file with no prefix
 	return pre_process_file_w_prefix(filename, "")
+}
+
+func process(res ProcessResult) (string, error) {
+	if res.vars != nil {
+		tmp, err := template.New("test").Parse(res.out)
+		var buff bytes.Buffer
+		tmp.Execute(&buff, res.vars)
+		return buff.String(), err
+	} else {
+		return res.out, nil
+	}
 }

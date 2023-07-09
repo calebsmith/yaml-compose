@@ -1,8 +1,5 @@
 {# examples/vars.yaml #}
 # {# examples/vars.yaml #}
-map:
-  keya1: val1
-  keya2: val2
 
 array_of_maps:
   - keya1: vala1
@@ -11,30 +8,17 @@ array_of_maps:
     keyb2: valb2
   - {$ examples/inline1.yaml $}
 
-strings:
-  - string1
-  - string2
-  - null
-
-ints:
-  - 1
-  - 2
-  - null
-
-floats:
-  - 1.2
-  - 2.1
-
-bools:
-  - True
-  - False
-
- # Simple test of recursion
-nested:
-  key: value
-  key2: 
-    nestedkey: value
-    nestedkey2:
-      - arrayValue1
-      - arrayValue2
-      - arrayMapKey: arrayMapValue
+rendered:
+  - {{.A}}
+  - {{.B}}
+  - {{.var3key }}
+  - {{.key1 }}
+  - {{.key2 }}
+  - {{.key3 }}
+  - {{.key }}
+  - maps:
+    {{- range $i, $dat := .data}}
+    {{- range $k, $v := $dat}}
+    {{$k}}: {{$v}}
+    {{- end}}
+    {{- end}}
