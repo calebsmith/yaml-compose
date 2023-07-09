@@ -1,3 +1,5 @@
+{# vars.yaml #}
+# {# vars.yaml #}
 map:
   keya1: val1
   keya2: val2
@@ -26,7 +28,7 @@ bools:
   - True
   - False
 
-# Simple test of recursion
+ # Simple test of recursion
 nested:
   key: value
   key2: 
