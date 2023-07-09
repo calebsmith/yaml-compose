@@ -4,11 +4,14 @@ map:
   keya1: val1
   keya2: val2
 
+{$ inline1.yaml $}
+
 array_of_maps:
   - keya1: vala1
     keya2: vala2
   - keyb1: valb1
     keyb2: valb2
+  - {$ inline1.yaml $}
 
 strings:
   - string1
