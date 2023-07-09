@@ -8,7 +8,7 @@ import (
 
 func main() {
 	// TODO: Take filename as CLI argument
-	proc_res, err := pre_process_file("example.yaml")
+	proc_res, err := pre_process_file("examples/main.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}

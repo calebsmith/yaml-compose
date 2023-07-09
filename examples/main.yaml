@@ -1,5 +1,5 @@
-{# vars.yaml #}
-# {# vars.yaml #}
+{# examples/vars.yaml #}
+# {# examples/vars.yaml #}
 map:
   keya1: val1
   keya2: val2
@@ -9,7 +9,7 @@ array_of_maps:
     keya2: vala2
   - keyb1: valb1
     keyb2: valb2
-  - {$ inline1.yaml $}
+  - {$ examples/inline1.yaml $}
 
 strings:
   - string1
