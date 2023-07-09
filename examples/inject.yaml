@@ -1,0 +1,4 @@
+data:
+  keya1: val1
+  keya2: val2
+  {$ vars3.yaml $}
