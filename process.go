@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -16,23 +15,28 @@ type ProcessResult struct {
 	vars *map[string]interface{}
 }
 
-func pre_process_line_load(line_in string) (ProcessResult, error) {
+func pre_process_line_load(res ProcessResult) (ProcessResult, error) {
 	// Pattern matches any line with {# filename #}, with filename being assigned to a group.
 	// Ignores YAML comments
 	pattern := `^[^#/s]*\{#(?P<filename>.*?)#\}`
 	re := regexp.MustCompile(pattern)
-	match := re.FindStringSubmatch(line_in)
+	match := re.FindStringSubmatch(res.out)
 	if len(match) > 0 {
 		groupIndex := re.SubexpIndex("filename")
 		if groupIndex != -1 {
-			filename := strings.Trim(match[groupIndex], " ")
-			content, err := ioutil.ReadFile(filename)
+			filename := strings.TrimSpace(match[groupIndex])
+			content, err := os.ReadFile(filename)
 			if err != nil {
 				return ProcessResult{
 					out:  "",
 					vars: nil}, err
 			}
 			vars := make(map[string]interface{})
+			if res.vars != nil {
+				for k, v := range *res.vars {
+					vars[k] = v
+				}
+			}
 			if err := yaml.Unmarshal([]byte(content), &vars); err != nil {
 				return ProcessResult{
 					out:  "",
@@ -45,9 +49,7 @@ func pre_process_line_load(line_in string) (ProcessResult, error) {
 		}
 	}
 	// Normal line, return as-is
-	return ProcessResult{
-		out:  line_in,
-		vars: nil}, nil
+	return res, nil
 }
 
 func pre_process_line_inject(line_in string) (ProcessResult, error) {
@@ -78,7 +80,7 @@ func pre_process_line(line_in string) (ProcessResult, error) {
 	if err != nil {
 		return res, err
 	}
-	return pre_process_line_load(res.out)
+	return pre_process_line_load(res)
 }
 
 func pre_process_file_w_prefix(filename string, prefix string) (ProcessResult, error) {
@@ -93,12 +95,12 @@ func pre_process_file_w_prefix(filename string, prefix string) (ProcessResult, e
 	// Pre-process linewise
 	vars := make(map[string]interface{})
 	var lines []string
-	index := 0
+	content_index := 0
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		raw_line := scanner.Text()
 		var line string
-		if index == 0 {
+		if content_index == 0 {
 			// Maintain original line prefix if it exists for injection point
 			line = fmt.Sprintf("%s%s", prefix, raw_line)
 		} else {
@@ -114,8 +116,13 @@ func pre_process_file_w_prefix(filename string, prefix string) (ProcessResult, e
 				vars[k] = v
 			}
 		}
-		lines = append(lines, proc_line_res.out)
-		index++
+		// Only append and increment if content encountered
+		// N.B. - This allows for correct handling of directives within
+		// injected content
+		if strings.TrimSpace(proc_line_res.out) != "" {
+			content_index++
+			lines = append(lines, proc_line_res.out)
+		}
 	}
 	if err := scanner.Err(); err != nil {
 		return ProcessResult{
