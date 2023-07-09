@@ -2,4 +2,4 @@ inline_map:
   keya1: val1
   keya2: val2
 
-{# examples/vars2.yaml #}
+{# vars2.yaml #}

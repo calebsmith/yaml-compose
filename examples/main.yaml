@@ -1,10 +1,10 @@
-{# examples/vars.yaml #}
+{# vars.yaml #}
 array_of_maps:
   - keya1: vala1
     keya2: vala2
   - keyb1: valb1
     keyb2: valb2
-  - {$ examples/inline1.yaml $}
+  - {$ inline1.yaml $}
 
 rendered:
   - {{.A}}
