@@ -4,16 +4,17 @@ A command-line tool for composing several YAML files together.
 
 ## Rationale
 
-Many tools such as k8s, helm, and docker-compose use YAML configuration files. Some tools such as Azure Pipelines have templating capability but
-it is otherwise difficult to keep these files DRY and organized.
+Many tools such as k8s, helm, and docker-compose use YAML configuration files extensively. Some tools such as Azure Pipelines have templating capability but it is otherwise difficult to keep these files DRY and organized and not available for all such tools.
 
 Namely, it is often desirable to:
-1. Loading - Load a YAML file as data and use these as template variables
-2. Injection - Directly include the contents of one YAML file in another.
+1. Load a YAML file as data and use these as template variables
+2. Directly include the contents of one YAML file in another.
+
+In yaml-compose, these techniques are called "loading" and "injecting" respectively.
 
 yaml-compose has simple mechanisms for each of these and they can work recursively and in tandem. i.e. One can inject a template that injects another, loads yet another and so on.
 
-(See "Usage" below for a practical example for docker-compose files)
+(See "Usage" below for more details and examples)
 
 ## Installation
 
@@ -28,3 +29,76 @@ From here, copy `yaml-compose` to your PATH, or otherwise append the yaml-compos
 TODO: Add release automation and installation instructions from Github releases
 
 ## Usage
+
+The syntax for yaml-compose is as follows:
+1. `{# vars.yaml #}` - loads a file named "vars.yaml"
+2. `{$ filename.yaml $}` - injects the contents of "filename.yaml"
+
+Some further considerations and examples:
+* Loading a file *only* loads the data therein. The directive is ellided from the file in which it was found. This data can then be used with `{{.VarName}}` per normal Golang text/template syntax.
+* Injecting a file maintains any prefix string on the line with the directive. Any contents that are loaded in maintain the level of indentation of that call site.
+
+## Examples
+
+### Variable Loading
+
+```
+# vars.yaml
+Host: localhost
+Port: 3000
+```
+
+```
+# main.yaml
+
+server:
+  host: {{.Host}}
+  port: {{.Port}}
+```
+
+Results in:
+```
+server:
+  host: localhost
+  port: 3000
+```
+
+### File Injection
+
+```
+# other.yaml
+key3: value3
+key4: value4
+```
+```
+# main.yaml
+data:
+  - key1: value1
+    key2: value2
+  - {$ other.yaml $}
+```
+
+Will result in:
+```
+data:
+  - key1: value1
+    key2: value2
+  - key3: value3
+    key4: value4
+```
+
+## Testing
+
+To test yaml-compose use:
+
+```
+make test
+```
+
+This uses the `cram` Python library for functional testing of command line programs. To install it, use:
+
+```
+make build_test
+```
+
+The test make target may eventually include Go unit tests as well.
