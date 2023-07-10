@@ -8,7 +8,7 @@ Warning: This project is in an initial proof-of-concept phase and should not be 
 
 ## Rationale
 
-Many tools such as k8s, helm, and docker-compose use YAML configuration files extensively. Some tools such as Azure Pipelines have templating capability but it is otherwise difficult to keep these files DRY and organized and not available for all such tools.
+Many tools such as k8s, helm, and docker-compose use YAML configuration files extensively. Some tools such as Azure Pipelines have templating capability but it is otherwise difficult to keep these files DRY and organized.
 
 Namely, it is often desirable to:
 1. Load a YAML file as data and use these as template variables
@@ -60,7 +60,7 @@ server:
   port: {{.Port}}
 ```
 
-Results in:
+`yaml-compose main.yaml` results in:
 ```
 server:
   host: localhost
@@ -74,6 +74,7 @@ server:
 key3: value3
 key4: value4
 ```
+
 ```
 # main.yaml
 data:
@@ -82,7 +83,7 @@ data:
   - {$ other.yaml $}
 ```
 
-Will result in:
+`yaml-compose main.yaml` results in:
 ```
 data:
   - key1: value1
@@ -105,6 +106,9 @@ services:
   {$ partials/redis.yaml $}
 ```
 
+* A more real-world docker-compose file is likely to have many more services and configurations. Making each portion reusable is yaml-compose's raison d'être
+
+#### Docker-compose shell function
 N.B. - One may be tempted to use process substitution such as the following:
 ```
 docker-compose -f <(yaml-compose infra.yaml) up -d
@@ -112,10 +116,10 @@ docker-compose -f <(yaml-compose infra.yaml) up -d
 
 However, in practice, docker-compose leverages the working directory of the compose file for certain needs such as volume mounting.
 
-As a workaround, consider a shell function or alias such as:
+As a workaround, consider a shell function such as:
 
 ```
-# ~/.zprofile
+# In ~/.zprofile
 
 # compose docker-compose and yaml-compose together
 function dcc() {
@@ -125,7 +129,7 @@ function dcc() {
 };
 ```
 
-Then, the following works as intended:
+The following works as intended:
 `dcc infra.yaml up -d`
 
 ## Testing
