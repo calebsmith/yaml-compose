@@ -1,5 +1,4 @@
-inline_map:
+nested:
   keya1: val1
   keya2: val2
-
 {# vars2.yaml #}

@@ -6,35 +6,28 @@ Noop - Output for a normal YAML file should be invariant:
     - C: 3
     - D: 4
 
-Inject:
+Inject - Only performing injection (inlining a single pair):
   $ pushd $INPUTS > /dev/null; yaml-compose inject.yaml; popd > /dev/null
   data:
     keya1: val1
     keya2: val2
     var3key: value
 
-Load:
+Load - Load a single variable and render it:
   $ pushd $INPUTS > /dev/null; yaml-compose load.yaml; popd > /dev/null
   Value: 1
 
 Full:
-  $ pushd $INPUTS > /dev/null; yaml-compose main.yaml; popd > /dev/null
-  array_of_maps:
-    - keya1: vala1
-      keya2: vala2
-    - keyb1: valb1
-      keyb2: valb2
-    - inline_map:
+  $ pushd $INPUTS > /dev/null; yaml-compose full.yaml; popd > /dev/null
+  data:
+    - nested:
         keya1: val1
         keya2: val2
-  rendered:
+  loaded_scalars:
     - 1
     - 2
-    - value
-    - value1
-    - value2
-    - value3
-    - new-value
-    - maps:
-      C: 3
-      D: 4
+    - 3
+    - 4
+  loaded_hashmap:
+    key1: value1
+    key2: value2

@@ -1,0 +1,14 @@
+{# vars.yaml #}
+data:
+  - {$ inline.yaml $}
+
+loaded_scalars:
+  - {{.A}}
+  - {{.B}}
+  - {{.C}}
+  - {{.D}}
+
+loaded_hashmap:
+  {{- range $k, $v := .hashmap}}
+  {{$k}}: {{$v}}
+  {{- end}}
