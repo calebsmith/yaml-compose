@@ -93,7 +93,7 @@ data:
 
 ### Realistic Example
 
-See `examples/docker-compose` to see an example that creates a docker-compose file. Running `yaml-compose infra.yaml` in that folder will produce the `result.yaml` file. This allows for separation of concerns and docker-compose files can be "composed" together with yaml-compose in this way.
+See `examples/docker-compose` to see an example that creates a docker-compose file. Running `yaml-compose infra.yaml > result.yaml` in that folder will produce the `result.yaml` file to be used with docker-compose. This allows for separation of concerns and docker-compose files can be "composed" together with yaml-compose in this way.
 
 ```
 # examples/docker-compose/infra.yaml
@@ -104,6 +104,29 @@ services:
   {$ partials/postgres.yaml $}
   {$ partials/redis.yaml $}
 ```
+
+N.B. - One may be tempted to use process substitution such as the following:
+```
+docker-compose -f <(yaml-compose infra.yaml) up -d
+```
+
+However, in practice, docker-compose leverages the working directory of the compose file for certain needs such as volume mounting.
+
+As a workaround, consider a shell function or alias such as:
+
+```
+# ~/.zprofile
+
+# compose docker-compose and yaml-compose together
+function dcc() {
+  file="$1"
+  shift
+  TMPPREFIX=$PWD docker-compose -f =(yaml-compose "$file") "$@"
+};
+```
+
+Then, the following works as intended:
+`dcc infra.yaml up -d`
 
 ## Testing
 
