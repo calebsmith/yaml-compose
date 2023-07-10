@@ -1,0 +1,5 @@
+{# config.yaml #}
+version: '3'
+services:
+  {$ partials/postgres.yaml $}
+  {$ partials/redis.yaml $}

@@ -1,0 +1,7 @@
+redis:
+  image: redis:6.2.2
+  ports:
+    - {{.REDIS_PORT}}
+  command: redis-server --appendonly yes
+  volumes:
+    - ./.redis_data:/data

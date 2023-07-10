@@ -1,0 +1,9 @@
+postgres:
+  image: postgres:12.5
+  ports:
+    - {{.POSTGRES_PORT}}
+  environment:
+    - POSTGRES_USER={{.POSTGRES_USER}}
+    - POSTGRES_HOST_AUTH_METHOD=trust
+  volumes:
+    - ./.postgres_data:/var/lib/postgresql/data

@@ -2,6 +2,10 @@
 
 A command-line tool for composing several YAML files together.
 
+Warning: This project is in an initial proof-of-concept phase and should not be used for production. Use at your own risk.
+
+(I am open to feedback on design ideas or feature requests)
+
 ## Rationale
 
 Many tools such as k8s, helm, and docker-compose use YAML configuration files extensively. Some tools such as Azure Pipelines have templating capability but it is otherwise difficult to keep these files DRY and organized and not available for all such tools.
@@ -85,6 +89,20 @@ data:
     key2: value2
   - key3: value3
     key4: value4
+```
+
+### Realistic Example
+
+See `examples/docker-compose` to see an example that creates a docker-compose file. Running `yaml-compose infra.yaml` in that folder will produce the `result.yaml` file. This allows for separation of concerns and docker-compose files can be "composed" together with yaml-compose in this way.
+
+```
+# examples/docker-compose/infra.yaml
+
+{# config.yaml #}
+version: '3'
+services:
+  {$ partials/postgres.yaml $}
+  {$ partials/redis.yaml $}
 ```
 
 ## Testing
